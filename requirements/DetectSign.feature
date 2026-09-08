@@ -5,7 +5,7 @@ Feature: Detect Signs
 	I want to: Detect and transcribe a car's license plate
 	So i can: Decide on opening or not a gate
 
-Scenario: 
+Scenario: "One License Plate was Detected"
 	Given The US sensors detected an object
 	And That object is a vehicle
 	And The ESP32-CAM has published image data

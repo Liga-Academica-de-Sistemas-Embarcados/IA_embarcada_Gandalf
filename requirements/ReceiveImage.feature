@@ -5,7 +5,7 @@ Feature:
 	I want to: receive images from ESP32-CAM
 	So i can: run license plate detection and make a decision.
 
-Scenario:
+Scenario: "ESP-cam published new image data"
 	Given The US sensors detected an object
 	And That object is a vehicle
 	When The ESP32-CAM publishes data
