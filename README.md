@@ -20,7 +20,7 @@ A arquitetura prevista separa a aquisição de sinais e imagens, executada no ES
 5. A placa reconhecida é armazenada e comparada com a base de dados.
 6. O Raspberry Pi envia o comando de abrir ou manter fechado ao circuito do portão.
 
-O requisito de detecção está descrito em [requirements/DetectSign.feature](requirements/DetectSign.feature). A comunicação entre os componentes ainda deve ser definida e implementada.
+Os requisitos funcionais estão descritos em [requirements/DetectSign.feature](requirements/DetectSign.feature), [requirements/ReceiveImage.feature](requirements/ReceiveImage.feature) e [requirements/checkDatabase.feature](requirements/checkDatabase.feature). A comunicação entre os componentes ainda deve ser definida e implementada.
 
 ## Diagramas
 
@@ -38,6 +38,8 @@ Fluxo interno do Raspberry Pi:
 .
 ├── requirements/
 │   ├── DetectSign.feature       # Requisito de detecção e transcrição da placa
+│   ├── ReceiveImage.feature      # Requisito de recebimento da imagem
+│   ├── checkDatabase.feature     # Requisito de consulta à base de dados
 │   └── README.md
 ├── src/
 │   ├── esp32_src/               # Código previsto para o ESP32-CAM
@@ -58,7 +60,7 @@ Fluxo interno do Raspberry Pi:
 └── README.md
 ```
 
-Os arquivos de código e READMEs dos módulos ainda estão em fase inicial. A estrutura acima representa as responsabilidades planejadas para cada componente.
+Os arquivos de código ainda estão em fase inicial, enquanto os READMEs dos módulos apresentam o escopo planejado para cada componente. A estrutura acima representa as responsabilidades planejadas para cada parte do sistema.
 
 ## Componentes
 
