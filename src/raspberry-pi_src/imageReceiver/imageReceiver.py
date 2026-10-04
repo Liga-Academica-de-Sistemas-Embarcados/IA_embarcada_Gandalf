@@ -3,7 +3,7 @@ import cv2
 class ImageReceiver():
     def __init__(self, camera_index):
         self.camera_index = camera_index
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(camera_index)
 
         if not self.cap.isOpened():
             print("[ERROR]: FATAL: câmera não abriu!!!")
@@ -12,7 +12,7 @@ class ImageReceiver():
         print("[SUCCESS]: captura de imagens inicializada com sucesso")
 
     def capture_frame(self):
-        frame, ret = self.cap.read()
+        ret, frame = self.cap.read()
         
         if not ret:
             print("[ERROR]: video não está sendo capturado.")
