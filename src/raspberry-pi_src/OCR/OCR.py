@@ -6,6 +6,8 @@ class OCR():
         self.CropLP = CropLicensePlate()
         self.reader = easyocr.Reader(['pt'],gpu=False)  #vamos sempre rodar na CPU (rasp)
 
+        print("[LOG] [OCR]: OCR inicializado")
+
     def OCR_pipeline(self, image):
         image = self.CropLP.cropImage(image)            #cropa a imagem em torno da placa de trânsito
 

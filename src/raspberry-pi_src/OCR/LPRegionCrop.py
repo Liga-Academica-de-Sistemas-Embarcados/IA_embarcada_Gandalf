@@ -24,7 +24,21 @@ class CropLicensePlate():
 
         return cropped_image
     
-    def runAndShow(self, image):
+    def runAndShowDetections(self, image):
         results = model(image)
 
         results[0].show()
+
+    def runAndShowCrop(self, image):
+        results = model(image)
+        
+        box = self.getBBPixels(results)
+
+        x1,y1 = int(box[0][0]), int(box[0][1])
+        x2,y2 = int(box[0][2]), int(box[0][3])
+
+        cropped_image = image[y1:y2, x1:x2]
+
+        cv2.imshow("frame", cropped_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
