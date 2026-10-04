@@ -2,9 +2,11 @@ from imageReceiver.imageReceiver import getImage
 from OCR.OCR import ImageToString
 from databaseCheck.databaseCheck import checkDatabase
 
-def main(IMAGE_PORT='.'):
+RPI_CAM_INDEX = 0
 
-    image_raw = getImage(IMAGE_PORT)            # np.ndarray
+def main():
+
+    image_raw = getImage(RPI_CAM_INDEX)            # np.ndarray
     license_plate = ImageToString(image_raw)    # str
     open = checkDatabase(license_plate)         # bool
 
