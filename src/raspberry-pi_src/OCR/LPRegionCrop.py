@@ -2,12 +2,12 @@
 
 from ultralytics import YOLO
 
-model = YOLO("https://huggingface.co/felipedutrain/placa-br-yolov11/resolve/main/best.pt")
+model = YOLO("best.pt")
 
 class CropLicensePlate():
     def cropImage(self, image):
         results = model(image)
         
-        results.show()
+        results[0].show()
 
         return image

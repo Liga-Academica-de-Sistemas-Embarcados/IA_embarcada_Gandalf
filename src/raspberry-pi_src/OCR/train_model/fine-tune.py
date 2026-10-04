@@ -6,7 +6,7 @@ DEFAULT_DATASET = SCRIPT_DIR / "dataset" / "data.yaml"
 
 class Params():
 	def __init__(self):
-		self.epochs = 50
+		self.epochs = 15
 		self.imgsz  = 640
 		self.batch  = 16
 		self.workers= 4

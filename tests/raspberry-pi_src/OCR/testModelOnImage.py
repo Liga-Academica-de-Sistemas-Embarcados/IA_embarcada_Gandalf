@@ -23,4 +23,4 @@ def run_model_on_image(image_path):
 	return cropped_image
 
 if __name__ == "__main__":
-	run_model_on_image("images/lp2.png")
+	run_model_on_image("images/lp5.png")
