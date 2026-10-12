@@ -7,10 +7,10 @@ model = YOLO("best.pt")
 
 class CropLicensePlate():
     def getBBPixels(self, resultObj):
-
-        xyxy_pixels = resultObj[0].boxes.xyxy.cpu().numpy()
-
-        return xyxy_pixels
+        return resultObj[0].boxes.xyxy.cpu().numpy()
+    
+    def getConfidence(self, resultObj):
+        return resultObj[0].boxes.conf
     
     def cropImage(self, image):
         results = model(image)
@@ -33,6 +33,9 @@ class CropLicensePlate():
         results = model(image)
         
         box = self.getBBPixels(results)
+        conf= self.getConfidence(results)
+
+        print(f"[LOG] [OCR] confidence values for prediction: {float(conf[0]):.2f}")
 
         x1,y1 = int(box[0][0]), int(box[0][1])
         x2,y2 = int(box[0][2]), int(box[0][3])
