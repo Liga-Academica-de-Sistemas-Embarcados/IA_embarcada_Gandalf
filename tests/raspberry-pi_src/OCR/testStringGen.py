@@ -20,4 +20,4 @@ def run_model_on_image(image_path):
 	print(text)
 
 if __name__ == "__main__":
-	run_model_on_image("images/lp5.png")
+	run_model_on_image("images/lp4.png")
