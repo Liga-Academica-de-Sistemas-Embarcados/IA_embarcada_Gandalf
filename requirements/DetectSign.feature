@@ -1,44 +1,35 @@
-# THIS IS A SYSTEM-LEVEL FEATURE. It is an intermediary step between the vehicle appearing and the system opening (or not) the gate.
+# THIS IS A SYSTEM-LEVEL FEATURE.
 
-Feature: Detect Signs
-    As an Automated System
-    I want to detect and transcribe a car's license plate
-    So I can decide whether to open the gate
+Feature: Infer a license plate
+    As the Raspberry Pi OCR-Inference module
+    I want to crop and transcribe a vehicle license plate
+    So checkDatabase can decide whether to open the gate
 
 Scenario: One license plate is detected
-    Given the US sensors detected an object at 2 meters
-    And the object was classified as a vehicle
-    And the ESP32-CAM published an image containing one license plate
+    Given ImageReceiver supplied np.ndarray::image_raw
+    And image_raw contains one license plate
     And the license plate text is "ABC1234"
-    When the detection engine receives the image
-    Then the system detects one license plate
-    And the system determines the license plate location
-    And the system transcribes the license plate as "ABC1234"
-    And the string "ABC1234" is stored
+    When CropImage receives image_raw
+    Then CropImage detects one license plate region
+    And OCR_pipeline transcribes the license plate as "ABC1234"
+    And OCR_pipeline returns str::license_plate "ABC1234"
 
 Scenario: No license plate is detected
-    Given the US sensors detected an object at 2 meters
-    And the object was classified as a vehicle
-    And the ESP32-CAM published an image containing no visible license plate
-    When the detection engine receives the image
-    Then the system detects no license plate
-    And no license plate string is stored
+    Given ImageReceiver supplied image_raw with no visible license plate
+    When CropImage receives image_raw
+    Then the system detects no license plate region
+    And OCR_pipeline returns no license_plate
 
 Scenario: License plate is detected but cannot be transcribed
-    Given the US sensors detected an object
-    And the object was classified as a vehicle
-    And the ESP32-CAM published an image containing a license plate
-    When the detection engine receives the image
-    And the system detects the license plate
-    And the license plate text cannot be reliably transcribed
-    Then the system must not store an invalid license plate string
+    Given ImageReceiver supplied image_raw containing a license plate
+    When CropImage detects the license plate region
+    And OCR_pipeline cannot reliably transcribe its text
+    Then OCR_pipeline must return no license_plate
+    And the system must not pass an invalid string to checkDatabase
 
 Scenario: Multiple license plates are detected
-    Given the US sensors detected an object
-    And the object was classified as a vehicle
-    And the ESP32-CAM published an image containing multiple license plates
-    When the detection engine receives the image
-    And inference detects more than one license plate
-    Then the system must identify the detection as invalid
-    And the system must not transcribe any license plate
-    And the system must not store a license plate string
+    Given ImageReceiver supplied image_raw containing multiple license plates
+    When CropImage detects more than one license plate region
+    Then the detection must be identified as invalid
+    And OCR_pipeline must not transcribe a license plate
+    And the system must not pass a license_plate to checkDatabase
