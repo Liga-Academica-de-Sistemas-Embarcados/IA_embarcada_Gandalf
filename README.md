@@ -9,19 +9,12 @@ acionar um portão. O ESP32 concentra a interação com os sensores e os sinais
 elétricos; o Raspberry Pi recebe a imagem, executa a inferência/OCR, consulta
 as placas autorizadas e devolve a decisão ao controlador.
 
-O diagrama de referência é [gandalf_diagram_new.png](system_diagrams/gandalf_diagram_new.png).
-Ele representa os módulos e os contratos de dados que devem orientar a
-integração:
+O diagrama de referência é:
 
-```text
-WEBcam -> CaptureFrame -> EspReceiver -> ImageReceiver
-                                     -> np.ndarray::image_raw
-                  ImageReceiver -> EspSender -> JSON -> checkDatabase
-                                             ^              |
-OCR_pipeline <- CropImage <- imagem         |              |
-                                             +-- str::license_plate
-ESP32: RaspSender <- RaspReceiver <- MotorControl <- PwmSignal
-```
+![Arquitetura modular do Projeto Gandalf](system_diagrams/gandalf_diagram_new.png)
+
+Ele representa os módulos, as conexões entre ESP32 e Raspberry Pi e os
+contratos de dados que devem orientar a integração.
 
 ## Fluxo ponta a ponta
 
@@ -73,25 +66,6 @@ comando físico do portão continuam pendentes.
 ├── tests/                       # Testes e ferramentas de validação
 └── LICENSE
 ```
-
-## Desenvolvimento
-
-Os contratos de integração devem ser definidos antes da implementação física:
-
-- mensagem de habilitação entre `RaspSender` e `EspReceiver`;
-- formato do JSON e representação da imagem;
-- retorno de `checkDatabase` e comando de abertura/fechamento;
-- tratamento de timeout, ausência de imagem, placa inválida e múltiplas
-  detecções;
-- método de acionamento seguro do portão.
-
-Os cenários de comportamento estão em
-[requirements/ReceiveImage.feature](requirements/ReceiveImage.feature),
-[requirements/DetectSign.feature](requirements/DetectSign.feature) e
-[requirements/checkDatabase.feature](requirements/checkDatabase.feature).
-Consulte os READMEs de [src/](src/README.md),
-[tests/](tests/README.md) e [system_diagrams/](system_diagrams/README.md) para
-os detalhes de cada área.
 
 ## Licença
 
