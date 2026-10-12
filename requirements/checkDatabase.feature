@@ -1,22 +1,21 @@
-# THIS IS A SYSTEM-LEVEL FEATURE.
+# THIS IS A SYSTEM-LEVEL FEATURE. It is the authorization step between
+# OCR_pipeline and the ESP32 gate controller.
 
-Feature: Check Database
-As a System
-I want to check if a license plate string is in my database
-So I can determine whether to open or not the gate
+Feature: Check the authorization database
+As checkDatabase
+I want to check whether str::license_plate is authorized
+So I can return the gate command to the ESP32
 
 Scenario: License plate is in the database
-Given the system has received a valid license plate string
-And the license plate string is "ABC1234"
+Given OCR_pipeline has returned str::license_plate "ABC1234"
 And "ABC1234" is registered in the database
-When the system checks the license plate string against the database
+When checkDatabase checks the license plate against the database
 Then the system must determine that the license plate is authorized
-And the system must send a command to the controller to open the gate
+And the system must return Bool::Enable true to the controller
 
 Scenario: License plate is not in the database
-Given the system has received a valid license plate string
-And the license plate string is "XYZ5678"
+Given OCR_pipeline has returned str::license_plate "XYZ5678"
 And "XYZ5678" is not registered in the database
-When the system checks the license plate string against the database
+When checkDatabase checks the license plate against the database
 Then the system must determine that the license plate is not authorized
-And the system must send a command to the controller to keep the gate closed
+And the system must return Bool::Enable false to the controller

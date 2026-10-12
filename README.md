@@ -1,113 +1,72 @@
-# IA embarcada Gandalf
+# Projeto Gandalf
 
-Sistema embarcado para identificação automática de veículos e controle de acesso por placa.
+Sistema embarcado de controle de acesso por identificação automática de placas.
 
-## Visão geral
+## Objetivo
 
-O Gandalf tem como objetivo controlar a abertura de um portão sem intervenção manual. Quando os sensores detectam a aproximação de um veículo, uma câmera publica uma imagem para o Raspberry Pi. O sistema processa essa imagem, identifica a placa por OCR e consulta uma base de dados de placas autorizadas. A decisão resultante é enviada ao circuito de controle do portão:
+O Gandalf combina um ESP32 e um Raspberry Pi para decidir se um veículo pode
+acionar um portão. O ESP32 concentra a interação com os sensores e os sinais
+elétricos; o Raspberry Pi recebe a imagem, executa a inferência/OCR, consulta
+as placas autorizadas e devolve a decisão ao controlador.
 
-- placa cadastrada: o portão pode ser aberto;
-- placa não cadastrada ou leitura inválida: o portão permanece fechado.
+O diagrama de referência é:
 
-A arquitetura prevista separa a aquisição de sinais e imagens, executada no ESP32-CAM, do processamento e da decisão, executados no Raspberry Pi.
+![Arquitetura modular do Projeto Gandalf](system_diagrams/gandalf_diagram_new.png)
 
-## Fluxo do sistema
+Ele representa os módulos, as conexões entre ESP32 e Raspberry Pi e os
+contratos de dados que devem orientar a integração.
 
-1. Os sensores de proximidade detectam um objeto e o sistema confirma a presença de um veículo.
-2. O ESP32-CAM captura e publica os dados da imagem.
-3. O Raspberry Pi recebe a imagem e encaminha o conteúdo ao mecanismo de detecção.
-4. O OCR localiza a placa e converte sua imagem em uma string.
-5. A placa reconhecida é armazenada e comparada com a base de dados.
-6. O Raspberry Pi envia o comando de abrir ou manter fechado ao circuito do portão.
+## Fluxo ponta a ponta
 
-Os requisitos funcionais estão descritos em [requirements/DetectSign.feature](requirements/DetectSign.feature), [requirements/ReceiveImage.feature](requirements/ReceiveImage.feature) e [requirements/checkDatabase.feature](requirements/checkDatabase.feature). A comunicação entre os componentes ainda deve ser definida e implementada.
+1. `MotorControl` recebe `PwmSignal` e habilita o acionamento do ESP32.
+2. `RaspReceiver` recebe esse estado e `RaspSender` publica a habilitação para
+   o Raspberry Pi.
+3. No Raspberry Pi, `EspReceiver` habilita `CaptureFrame`, que captura a
+   imagem da webcam.
+4. `ImageReceiver` entrega a imagem bruta como `np.ndarray::image_raw`.
+5. `CropImage` localiza e recorta a placa. `OCR_pipeline` transforma o recorte
+   em `str::license_plate`.
+6. `checkDatabase` consulta a placa e produz a decisão de autorização.
+7. A decisão volta pelo canal de controle para `MotorControl`, que gera o
+   `PwmSignal` do portão.
 
-## Diagramas
+O JSON do canal entre `ImageReceiver`/`EspSender` e `checkDatabase` ainda
+precisa ter um esquema formal. Os nomes acima são os nomes lógicos do
+diagrama; alguns ainda não possuem implementação no repositório.
 
-Visão geral do sistema:
+## Estado atual da implementação
 
-![Diagrama principal do sistema](system_diagrams/gandalf_main_system.png)
+| Módulo do diagrama | Implementação atual |
+| --- | --- |
+| `MotorControl`, `RaspReceiver`, `RaspSender` | Ainda não implementados em `src/esp32_src`. |
+| `EspReceiver`, `CaptureFrame` | Ainda não existem como classes separadas. |
+| `ImageReceiver` | Implementado com `cv2.VideoCapture`; hoje lê uma câmera local. |
+| `CropImage` | Implementado como `CropLicensePlate` em `OCR/LPRegionCrop.py`, usando YOLO e `best.pt`. |
+| `OCR_pipeline` | Implementado em `OCR/OCR.py` com EasyOCR em CPU. |
+| `checkDatabase` | Diretório criado, mas `databaseCheck.py` ainda não contém lógica. |
+| `JSON`, `np.ndarray::image_raw`, `str::license_plate` | Contratos representados no diagrama, sem protocolo validado no código. |
 
-Fluxo interno do Raspberry Pi:
+Portanto, a execução atual cobre apenas a captura local e parte do pipeline de
+OCR. A integração ESP32--Raspberry Pi, a persistência/consulta da base e o
+comando físico do portão continuam pendentes.
 
-![Diagrama do Raspberry Pi](system_diagrams/raspberry_diagram.png)
-
-## Estrutura do repositório
+## Organização do repositório
 
 ```text
 .
-├── requirements/
-│   ├── DetectSign.feature       # Requisito de detecção e transcrição da placa
-│   ├── ReceiveImage.feature      # Requisito de recebimento da imagem
-│   ├── checkDatabase.feature     # Requisito de consulta à base de dados
-│   └── README.md
+├── requirements/                 # Cenários funcionais em Gherkin
 ├── src/
-│   ├── esp32_src/               # Código previsto para o ESP32-CAM
-│   │   └── README.md
-│   ├── raspberry-pi_src/        # Código previsto para o Raspberry Pi
-│   │   ├── main.py              # Orquestração da aplicação
-│   │   ├── databaseCheck/       # Consulta de placas autorizadas
-│   │   ├── imageReceiver/       # Recepção das imagens
-│   │   ├── OCR/                 # Reconhecimento da placa
-│   │   └── README.md
-│   └── README.md
-├── system_diagrams/             # Diagramas da arquitetura
-├── tests/
-│   ├── esp32_src/               # Testes do código do ESP32-CAM
-│   ├── raspberry-pi_src/        # Testes do código do Raspberry Pi
-│   └── README.md
-├── LICENSE
-└── README.md
+│   ├── esp32_src/               # MotorControl, RaspReceiver e RaspSender
+│   └── raspberry-pi_src/
+│       ├── imageReceiver/       # ImageReceiver e futura entrada do ESP32
+│       ├── OCR/                 # CropImage e OCR_pipeline
+│       ├── databaseCheck/       # checkDatabase
+│       └── main.py              # Orquestração do fluxo no Raspberry Pi
+├── system_diagrams/             # Diagramas de arquitetura
+├── tests/                       # Testes e ferramentas de validação
+└── LICENSE
 ```
-
-Os arquivos de código ainda estão em fase inicial, enquanto os READMEs dos módulos apresentam o escopo planejado para cada componente. A estrutura acima representa as responsabilidades planejadas para cada parte do sistema.
-
-## Componentes
-
-### ESP32-CAM
-
-Responsável pela captura da imagem do veículo e pela publicação dos dados para o Raspberry Pi. Também deve integrar os sensores ou receber o sinal de detecção do circuito embarcado, conforme a implementação final do hardware.
-
-### Raspberry Pi
-
-Responsável pelo fluxo de processamento da imagem e pela decisão de acesso. Seus módulos previstos são:
-
-- `imageReceiver`: recebe a imagem bruta publicada pelo ESP32-CAM;
-- `OCR`: detecta a região da placa e produz o texto reconhecido;
-- `databaseCheck`: verifica se a placa está autorizada;
-- `main.py`: coordena a recepção, o reconhecimento, a consulta e o comando do portão.
-
-### Circuito de controle do portão
-
-Recebe o comando de saída do Raspberry Pi e aciona o mecanismo físico de abertura quando a placa for validada. O comportamento elétrico e o protocolo de comunicação ainda precisam ser especificados.
-
-## Desenvolvimento e testes
-
-O projeto está organizado por responsabilidade, com requisitos em Gherkin, código separado por plataforma e diretórios reservados para testes. Antes da integração física, recomenda-se validar cada etapa isoladamente:
-
-1. recepção de uma imagem de teste;
-2. reconhecimento de placas em diferentes condições;
-3. consulta para placas autorizadas e não autorizadas;
-4. emissão do comando de abertura;
-5. fluxo completo com ESP32-CAM, Raspberry Pi e circuito do portão.
-
-Os comandos de instalação, execução e teste serão adicionados quando as dependências e o protocolo de comunicação forem definidos.
-
-## Cronograma
-
-Esta seção será usada para registrar o cronograma do projeto. As datas podem ser preenchidas após a definição da equipe, dos componentes e dos marcos de integração.
-
-| Etapa | Entregável | Responsável | Prazo | Status |
-| --- | --- | --- | --- | --- |
-| Definição de requisitos | Requisitos funcionais e critérios de aceitação | A definir | A definir | Não iniciado |
-| Integração dos sensores | Detecção de veículo pelo circuito embarcado | A definir | A definir | Não iniciado |
-| Captura e comunicação | ESP32-CAM publicando imagens | A definir | A definir | Não iniciado |
-| Recepção no Raspberry Pi | Módulo `imageReceiver` funcional | A definir | A definir | Não iniciado |
-| OCR | Placa convertida em texto | A definir | A definir | Não iniciado |
-| Banco de dados | Consulta de placas autorizadas | A definir | A definir | Não iniciado |
-| Controle do portão | Comando de abrir ou manter fechado | A definir | A definir | Não iniciado |
-| Integração e testes | Validação do fluxo completo | A definir | A definir | Não iniciado |
 
 ## Licença
 
-Consulte o arquivo [LICENSE](LICENSE) para os termos de uso do projeto.
+Consulte [LICENSE](LICENSE).
