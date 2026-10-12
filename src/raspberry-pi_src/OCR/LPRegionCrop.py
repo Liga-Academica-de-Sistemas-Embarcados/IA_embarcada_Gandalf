@@ -10,7 +10,7 @@ class CropLicensePlate():
         return resultObj[0].boxes.xyxy.cpu().numpy()
     
     def getConfidence(self, resultObj):
-        return resultObj[0].boxes.conf
+        return float((resultObj[0].boxes.conf)[0])
     
     def cropImage(self, image):
         results = model(image)
@@ -35,7 +35,7 @@ class CropLicensePlate():
         box = self.getBBPixels(results)
         conf= self.getConfidence(results)
 
-        print(f"[LOG] [OCR] confidence values for prediction: {float(conf[0]):.2f}")
+        print(f"[LOG] [OCR] confidence values for prediction: {conf:.2f}")
 
         x1,y1 = int(box[0][0]), int(box[0][1])
         x2,y2 = int(box[0][2]), int(box[0][3])
