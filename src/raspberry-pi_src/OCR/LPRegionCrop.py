@@ -17,6 +17,10 @@ class CropLicensePlate():
         
         box = self.getBBPixels(results)
 
+        if len(box) == 0:
+            print("[LOG] [OCR] nenhuma imagem foi detectada")
+            return None
+ 
         x1,y1 = int(box[0][0]), int(box[0][1])
         x2,y2 = int(box[0][2]), int(box[0][3])
 

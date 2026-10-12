@@ -1,5 +1,5 @@
 import easyocr
-from LPRegionCrop import CropLicensePlate
+from .LPRegionCrop import CropLicensePlate
 
 class OCR():
     def __init__(self):
@@ -10,6 +10,10 @@ class OCR():
 
     def OCR_pipeline(self, image):
         image = self.CropLP.cropImage(image)            #cropa a imagem em torno da placa de trânsito
+
+        if image is None: 
+            print("[LOG] [OCR] modelo não detectou nenhuma imagem")
+            return None
 
         ocr_model_output = self.reader.readtext(image,
                                                 allowlist='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
