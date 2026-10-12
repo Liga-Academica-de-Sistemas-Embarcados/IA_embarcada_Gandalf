@@ -10,17 +10,18 @@ from OCR.OCR import OCR
 
 RPI_CAM_INDEX = 0
 
-def rpiModule(receiver:ImageReceiver):
+def rpiModule(receiver:ImageReceiver, InferenceEngine:OCR):
 	image_raw = receiver.capture_frame()
-	license_plate = OCR().OCR_pipeline(image_raw)
+	license_plate = InferenceEngine.OCR_pipeline(image_raw)
 
 	return license_plate
 
 def main():
 	receiver = ImageReceiver(RPI_CAM_INDEX)
+	InferenceEngine = OCR()
 
 	while True:
-		licensePlateString = rpiModule(receiver)
+		licensePlateString = rpiModule(receiver, InferenceEngine)
 		print(f"placa detectada: {licensePlateString}")
 
 if __name__ == '__main__':
