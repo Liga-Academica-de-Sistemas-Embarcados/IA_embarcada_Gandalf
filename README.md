@@ -67,6 +67,14 @@ comando físico do portão continuam pendentes.
 └── LICENSE
 ```
 
+## Como rodar
+
+Instalar as dependências
+```
+pip install -r requirements.txt
+```
+
+
 ## Licença
 
 Consulte [LICENSE](LICENSE).
