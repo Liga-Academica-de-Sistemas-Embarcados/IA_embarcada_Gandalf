@@ -1,9 +1,11 @@
 #"LICENSE PLATE REGION CROP". Cropa a região de interesse (a placa de trânsito) de modo a facilitar a vida do OCR
-
+from pathlib import Path
 from ultralytics import YOLO
 import cv2
 
-model = YOLO("best.pt")
+REPO_ROOT = Path(__file__).resolve().parents[3]
+MODEL_PATH = REPO_ROOT / "runs" /"runs" / "detect" / "runs" / "yolov8n-license-plate" / "weights" / "best.pt"
+model = YOLO(str(MODEL_PATH))
 
 class CropLicensePlate():
     def getBBPixels(self, resultObj):
