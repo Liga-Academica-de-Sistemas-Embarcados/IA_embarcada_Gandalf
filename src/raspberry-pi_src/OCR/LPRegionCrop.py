@@ -4,7 +4,7 @@ from ultralytics import YOLO
 import cv2
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-MODEL_PATH = REPO_ROOT / "runs" /"runs" / "detect" / "runs" / "yolov8n-license-plate" / "weights" / "best.pt"
+MODEL_PATH = REPO_ROOT / "models" / "best.pt"
 model = YOLO(str(MODEL_PATH))
 
 class CropLicensePlate():
