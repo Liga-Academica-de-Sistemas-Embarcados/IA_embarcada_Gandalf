@@ -101,6 +101,40 @@ pip install -r requirements.txt
 > pip uninstall -y opencv-python opencv-python-headless
 > pip install opencv-python
 > ```
+
+### 4. Download dos arquivos
+
+Os arquivos necessários estão disponíveis no Google Drive do projeto:
+
+[Link do dataset](https://drive.google.com/drive/u/1/folders/1oAJJx06qlNdkrOMmUcyX06cQlJKtIdms)
+
+Baixe o arquivo ZIP do dataset e, caso o modelo treinado esteja disponibilizado separadamente, baixe também o arquivo best.pt.
+
+### 5. Extração do dataset
+
+Após baixar o ZIP, extraia seu conteúdo. No Linux, por exemplo, execute:
+
+> unzip gandalf_car_dataset-20261013T222109Z-1-001.zip
+
+O nome do arquivo acima corresponde ao pacote disponibilizado para download e pode mudar caso uma nova versão seja publicada.
+
+Após a extração, o dataset contém a seguinte estrutura:
+```
+gandalf_car_dataset/
+└── dataset/
+    ├── train/
+    │   ├── images/
+    │   └── labels/
+    ├── valid/
+    │   ├── images/
+    │   └── labels/
+    ├── test/
+    │   ├── images/
+    │   └── labels/
+    └── data.yaml
+```
+
+As pastas images contêm as imagens de veículos e placas. As pastas labels contêm as anotações correspondentes utilizadas pelo YOLO. Os conjuntos train, valid e test são destinados, respectivamente, ao treinamento, à validação e à avaliação do modelo.
  
 ### 4. Executar os testes automatizados (base de placas)
  
