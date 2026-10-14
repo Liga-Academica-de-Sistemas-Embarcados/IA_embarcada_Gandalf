@@ -26,7 +26,7 @@ def run_model_on_image(image_path):
 
 	from OCR import OCR
 
-	text = OCR().OCR_pipeline(image)
+	text = OCR().OCR_pi1peline(image)
 	print(text)
 
 if __name__ == "__main__":

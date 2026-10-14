@@ -9,7 +9,7 @@ class OCR():
         print("[LOG] [OCR]: OCR inicializado")
 
     def OCR_pipeline(self, image):
-        image = self.CropLP.cropImage(image)            #cropa a imagem em torno da placa de trânsito
+        image = self.CropLP.cropImage(image, correctPerspective=True)            #cropa a imagem em torno da placa de trânsito
 
         if image is None: 
             print("[LOG] [OCR] modelo não detectou nenhuma imagem")
