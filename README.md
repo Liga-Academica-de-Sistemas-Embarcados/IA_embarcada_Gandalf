@@ -135,8 +135,13 @@ gandalf_car_dataset/
 ```
 
 As pastas images contêm as imagens de veículos e placas. As pastas labels contêm as anotações correspondentes utilizadas pelo YOLO. Os conjuntos train, valid e test são destinados, respectivamente, ao treinamento, à validação e à avaliação do modelo.
+
+Crie um diretório _models_ e mova o arquivo do modelo treinado _.pt_ para esse diretório. O modelo estará na pasta _runs_.
+```bash
+mkdir models
+```
  
-### 4. Executar os testes automatizados (base de placas)
+### 6. Executar os testes automatizados (base de placas)
  
 A partir da raiz do repositório:
  
@@ -144,13 +149,13 @@ A partir da raiz do repositório:
 python -m unittest tests/raspberry-pi_src/test_databaseCheck.py
 ```
  
-Saída esperada: `Ran 4 tests ... OK`. Não precisa de câmera nem de GPU.
+> Saída esperada: `Ran 4 tests ... OK`. Não precisa de câmera nem de GPU.
  
 Para alterar as placas autorizadas, edite
 `src/raspberry-pi_src/databaseCheck/plates.json` (lista JSON de strings; a
 comparação ignora espaços e maiúsculas/minúsculas).
  
-### 5. Executar o pipeline com a webcam (OCR em loop)
+### 7. Executar o pipeline com a webcam (OCR em loop)
  
 ```bash
 cd tests/raspberry-pi_src/OCR
@@ -163,7 +168,7 @@ confiável). Pare com `Ctrl+C`. Se a câmera não abrir, o script encerra com
 `[ERROR]: FATAL: câmera não abriu!!!`; teste outro índice alterando
 `RPI_CAM_INDEX`.
  
-### 6. Executar o modelo em uma imagem
+### 8. Executar o modelo em uma imagem
  
 ```bash
 cd tests/raspberry-pi_src/OCR
