@@ -67,6 +67,117 @@ comando físico do portão continuam pendentes.
 └── LICENSE
 ```
 
+## Como rodar
+ 
+### 1. Pré-requisitos
+ 
+- Python 3.10 ou superior
+- Git
+- Uma webcam
+- Uma tela/ambiente gráfico 
+
+### 2. Clonar o repositório
+ 
+```bash
+git clone https://github.com/Liga-Academica-de-Sistemas-Embarcados/IA_embarcada_Gandalf.git
+cd IA_embarcada_Gandalf
+```
+ 
+### 3. Dependências
+ 
+Instale as dependências rodando:
+ 
+```bash
+pip install -r requirements.txt
+```
+ 
+> A primeira execução do EasyOCR baixa os modelos de reconhecimento
+> (precisa de internet). O PyTorch é grande; a instalação pode demorar.
+ 
+> **Erro de `cv2.imshow` / "The function is not implemented"?** O `easyocr`
+> pode instalar o `opencv-python-headless`, que não tem interface gráfica.
+> Corrija com:
+> ```bash
+> pip uninstall -y opencv-python opencv-python-headless
+> pip install opencv-python
+> ```
+
+### 4. Download dos arquivos
+
+Os arquivos necessários estão disponíveis no Google Drive do projeto:
+
+[Link do dataset](https://drive.google.com/drive/u/1/folders/1oAJJx06qlNdkrOMmUcyX06cQlJKtIdms)
+
+Baixe o arquivo ZIP do dataset e, caso o modelo treinado esteja disponibilizado separadamente, baixe também o arquivo best.pt.
+
+### 5. Extração do dataset
+
+Após baixar o ZIP, extraia seu conteúdo. No Linux, por exemplo, execute:
+
+> unzip gandalf_car_dataset-20261013T222109Z-1-001.zip
+
+O nome do arquivo acima corresponde ao pacote disponibilizado para download e pode mudar caso uma nova versão seja publicada.
+
+Após a extração, o dataset contém a seguinte estrutura:
+```
+gandalf_car_dataset/
+└── dataset/
+    ├── train/
+    │   ├── images/
+    │   └── labels/
+    ├── valid/
+    │   ├── images/
+    │   └── labels/
+    ├── test/
+    │   ├── images/
+    │   └── labels/
+    └── data.yaml
+```
+
+As pastas images contêm as imagens de veículos e placas. As pastas labels contêm as anotações correspondentes utilizadas pelo YOLO. Os conjuntos train, valid e test são destinados, respectivamente, ao treinamento, à validação e à avaliação do modelo.
+
+Crie um diretório _models_ e mova o arquivo do modelo treinado _.pt_ para esse diretório. O modelo estará na pasta _runs_.
+```bash
+mkdir models
+```
+ 
+### 6. Executar os testes automatizados (base de placas)
+ 
+A partir da raiz do repositório:
+ 
+```bash
+python -m unittest tests/raspberry-pi_src/test_databaseCheck.py
+```
+ 
+> Saída esperada: `Ran 4 tests ... OK`. Não precisa de câmera nem de GPU.
+ 
+Para alterar as placas autorizadas, edite
+`src/raspberry-pi_src/databaseCheck/plates.json` (lista JSON de strings; a
+comparação ignora espaços e maiúsculas/minúsculas).
+ 
+### 7. Executar o pipeline com a webcam (OCR em loop)
+ 
+```bash
+cd tests/raspberry-pi_src/OCR
+python testWebcamIntegration.py
+```
+ 
+O script abre a câmera de índice `0`, roda detecção + OCR continuamente e
+imprime `placa detectada: <texto>` (ou `None` quando não há placa/texto
+confiável). Pare com `Ctrl+C`. Se a câmera não abrir, o script encerra com
+`[ERROR]: FATAL: câmera não abriu!!!`; teste outro índice alterando
+`RPI_CAM_INDEX`.
+ 
+### 8. Executar o modelo em uma imagem
+ 
+```bash
+cd tests/raspberry-pi_src/OCR
+python testModelOnImage.py --image /caminho/para/foto_da_placa.jpg
+```
+ 
+Mostra o recorte da placa detectada numa janela (feche com qualquer tecla) e
+imprime a confiança da detecção.
+
 ## Licença
 
 Consulte [LICENSE](LICENSE).
