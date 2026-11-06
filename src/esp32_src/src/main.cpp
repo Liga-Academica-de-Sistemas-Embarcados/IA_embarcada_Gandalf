@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <string.h>
 #include <motorControl.hpp>
 
 void setup()
@@ -12,7 +11,9 @@ void loop()
   if (Serial.available() > 0) // caso a rasp envie um comando ...
   {
     String comm = Serial.readStringUntil('\n');
-    if (comm.length() > 0)
+    comm.trim();
+
+    if (comm == "1.00" || comm == "0.00")
     {
       control_motor(comm);
       Serial.println("ACK");

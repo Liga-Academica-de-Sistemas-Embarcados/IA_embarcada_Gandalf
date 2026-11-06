@@ -20,7 +20,7 @@ def main():
     if open: msg = 1 
     else: msg = 0
 
-    rec = espSender(USB=USB, baud_rate=BAUD_RATE).send(open)    
+    rec = espSender(USB=USB, baud_rate=BAUD_RATE).send(msg)    
 
     if rec:
         print("Comando enviado com sucesso!")
