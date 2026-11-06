@@ -11,7 +11,7 @@ import serial
 
 class espSender():
 
-    def __init__(self, USB:str, baud_rate:int, timeout=1):
+    def __init__(self, USB:str, baud_rate:int, timeout=5):
         self.USB = USB
         self.bd = baud_rate
         self.timeout = timeout
@@ -37,3 +37,7 @@ class espSender():
 
         self.ser.write(f'{msg:.2f}\n'.encode('utf-8'))
         return self.listen()
+    
+    def close_comm(self):
+        print("[LOG [COMM] fechando comunicação")
+        self.ser.close()

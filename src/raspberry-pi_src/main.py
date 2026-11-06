@@ -1,15 +1,16 @@
 from imageReceiver.imageReceiver import ImageReceiver
+from espSender import espSender
 from OCR import OCR
 from databaseCheck.databaseCheck import checkDatabase
-from espSender import espSender
 
 RPI_CAM_INDEX = 0
 USB = '/dev/ttyUSB0'
 BAUD_RATE = 115200
 
-def main():
+receiver = ImageReceiver(RPI_CAM_INDEX)
+sender   = espSender(USB=USB, baud_rate=BAUD_RATE)
 
-    receiver = ImageReceiver(RPI_CAM_INDEX)
+def main():
 
     image_raw = receiver.capture_frame()                # np.ndarray
     license_plate = OCR().OCR_pipeline(image_raw)       # str
@@ -20,7 +21,7 @@ def main():
     if open: msg = 1 
     else: msg = 0
 
-    rec = espSender(USB=USB, baud_rate=BAUD_RATE).send(msg)    
+    rec = sender.send(msg)    
 
     if rec:
         print("Comando enviado com sucesso!")
@@ -29,3 +30,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    receiver.stop_capture()
+    sender.close_comm()
