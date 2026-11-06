@@ -15,7 +15,7 @@ void loop()
     if (comm.length() > 0)
     {
       control_motor(comm);
-      Serial.println("1");
+      Serial.println("ACK");
     }
   } 
 }

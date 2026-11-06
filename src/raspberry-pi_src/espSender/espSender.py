@@ -22,9 +22,9 @@ class espSender():
         start = time.time()
 
         while True:
-            msg_esp = self.ser.read()
+            msg_esp = self.ser.readline().decode('utf-8').strip()
             
-            if msg_esp ==b'1':  # ack
+            if msg_esp == 'ACK':
                 return True
             
             current_time = time.time()
