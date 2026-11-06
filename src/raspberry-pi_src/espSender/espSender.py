@@ -10,7 +10,7 @@ import serial
 # pode ser também que dê timeout. Caso isso aconteça, o módulo deve retornar False.
 
 class espSender():
-    
+
     def __init__(self, USB:str, baud_rate:int, timeout=1):
         self.USB = USB
         self.bd = baud_rate
@@ -33,7 +33,7 @@ class espSender():
             if elapsed_time >= self.timeout:
                 return False
             
-    def send(self, msg):
+    def send(self, msg):    # enviar 1 para abrir, 0 para manter fechado.
 
         self.ser.write(f'{msg:.2f}\n'.encode('utf-8'))
         return self.listen()
