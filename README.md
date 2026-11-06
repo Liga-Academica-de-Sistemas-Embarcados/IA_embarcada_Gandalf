@@ -38,7 +38,8 @@ diagrama; alguns ainda não possuem implementação no repositório.
 
 | Módulo do diagrama | Implementação atual |
 | --- | --- |
-| `MotorControl`, `RaspReceiver`, `RaspSender` | Ainda não implementados em `src/esp32_src`. |
+| `RaspReceiver` | Firmware Arduino/PlatformIO inicial em `src/esp32_src`; recebe decisões seriais e responde com ACK. |
+| `MotorControl`, `RaspSender` | Ainda não implementados em `src/esp32_src`. |
 | `EspReceiver`, `CaptureFrame` | Ainda não existem como classes separadas. |
 | `ImageReceiver` | Implementado com `cv2.VideoCapture`; hoje lê uma câmera local. |
 | `CropImage` | Implementado como `CropLicensePlate` em `OCR/LPRegionCrop.py`, usando YOLO e `best.pt`. |

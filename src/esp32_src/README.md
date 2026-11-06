@@ -9,6 +9,35 @@ três módulos:
 | `RaspReceiver` | Recebe do Raspberry Pi o comando ou estado de habilitação. | comando vindo do Raspberry Pi |
 | `RaspSender` | Publica ao Raspberry Pi o estado necessário para iniciar a captura. | `Bool::Open` |
 
-Nenhum desses módulos está implementado ainda. O código futuro deve manter a
-separação entre comunicação e acionamento elétrico, definir níveis seguros para
-falhas e documentar o protocolo usado pelo Raspberry Pi.
+## Build com PlatformIO
+
+O projeto usa o framework Arduino dentro do PlatformIO. A configuração está em
+[`platformio.ini`](platformio.ini) e o firmware inicial está em
+[`src/raspReceiver.ino`](src/raspReceiver.ino).
+
+Na pasta `src/esp32_src`, execute:
+
+```bash
+pio run
+pio run --target upload
+pio device monitor
+```
+
+O alvo padrão é `esp32dev` e a comunicação serial usa `115200` baud.
+
+### Protocolo do `RaspReceiver`
+
+O Raspberry Pi envia uma decisão terminada por newline:
+
+| Mensagem | Estado |
+| --- | --- |
+| `1.00\n` | habilitado |
+| `0.00\n` | desabilitado |
+
+Após validar uma mensagem, o ESP32 atualiza o estado de `LED_BUILTIN` e envia
+o byte `1` como acknowledgement. Mensagens inválidas são ignoradas e não
+alteram o estado. O acionamento elétrico do portão ainda não está conectado;
+`LED_BUILTIN` é apenas a saída de teste do receptor.
+
+O código foi mantido separado dos futuros `MotorControl` e `RaspSender` para
+que a comunicação serial não acione diretamente o circuito de potência.
