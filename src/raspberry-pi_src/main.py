@@ -14,6 +14,11 @@ def main():
 
     image_raw = receiver.capture_frame()                # np.ndarray
     license_plate = OCR().OCR_pipeline(image_raw)       # str
+
+    if license is None:
+        print("[LOG] [OCR] não detected placa")
+        return
+
     open = checkDatabase(license_plate)                 # bool
 
     msg = None
@@ -24,12 +29,14 @@ def main():
     rec = sender.send(msg)    
 
     if rec:
-        print("Comando enviado com sucesso!")
+        print("[LOG] [GANDALF] Comando enviado com sucesso!")
     else:
-        print("Comando enviado, mas não recebido")
+        print("[LOG] [GANFALF] Comando enviado, mas não recebido")
 
 if __name__ == '__main__':
-    main()
-
-    receiver.stop_capture()
-    sender.close_comm()
+    try:
+        while True:
+            main()
+    finally:
+        receiver.stop_capture()
+        sender.close_comm()
