@@ -23,4 +23,4 @@ class ImageReceiver():
     def stop_capture(self):
         self.cap.release()
 
-        print("[LOG]: captura de câmera finalizada.")
+        print("[LOG] [CAM]: captura de câmera finalizada.")

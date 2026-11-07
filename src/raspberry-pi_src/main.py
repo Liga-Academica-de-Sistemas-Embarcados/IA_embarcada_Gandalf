@@ -1,23 +1,42 @@
 from imageReceiver.imageReceiver import ImageReceiver
+from espSender import espSender
 from OCR import OCR
 from databaseCheck.databaseCheck import checkDatabase
 
 RPI_CAM_INDEX = 0
+USB = '/dev/ttyUSB0'
+BAUD_RATE = 115200
+
+receiver = ImageReceiver(RPI_CAM_INDEX)
+sender   = espSender(USB=USB, baud_rate=BAUD_RATE)
 
 def main():
 
-    receiver = ImageReceiver(RPI_CAM_INDEX)
-
     image_raw = receiver.capture_frame()                # np.ndarray
     license_plate = OCR().OCR_pipeline(image_raw)       # str
+
+    if license is None:
+        print("[LOG] [OCR] não detected placa")
+        return
+
     open = checkDatabase(license_plate)                 # bool
 
-    if not open:
-        print(f"PLACA {license_plate} NÃO ESTÁ NA BASE DE DADOS. PORTÃO NÃO SERÁ ABERTO.")
-    else:
-        print(f"PLACA {license_plate} ESTÁ NA BASE DE DADOS. ABRINDO O PORTÃO.")
+    msg = None
 
-    return open
+    if open: msg = 1 
+    else: msg = 0
+
+    rec = sender.send(msg)    
+
+    if rec:
+        print("[LOG] [GANDALF] Comando enviado com sucesso!")
+    else:
+        print("[LOG] [GANFALF] Comando enviado, mas não recebido")
 
 if __name__ == '__main__':
-    main()
+    try:
+        while True:
+            main()
+    finally:
+        receiver.stop_capture()
+        sender.close_comm()
