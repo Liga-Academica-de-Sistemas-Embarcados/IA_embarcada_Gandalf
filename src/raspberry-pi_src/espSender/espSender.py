@@ -15,7 +15,11 @@ class espSender():
         self.USB = USB
         self.bd = baud_rate
         self.timeout = timeout
-        self.ser = serial.Serial(self.USB, self.bd, self.timeout)
+        self.ser = serial.Serial(
+            port=self.USB,
+            baudrate=self.bd,
+            timeout=self.timeout,
+        )
 
     def listen(self):
         
@@ -26,6 +30,8 @@ class espSender():
             
             if msg_esp == 'ACK':
                 return True
+            if msg_esp == 'HUH':
+                return False
             
             current_time = time.time()
             elapsed_time = current_time - start # segundos
@@ -35,7 +41,8 @@ class espSender():
             
     def send(self, msg):    # enviar 1 para abrir, 0 para manter fechado.
 
-        self.ser.write(f'{msg:.2f}\n'.encode('utf-8'))
+        print(f'[LOG] [COMM] writing message {msg}')
+        self.ser.write(f'{msg}\n'.encode('utf-8'))
         return self.listen()
     
     def close_comm(self):

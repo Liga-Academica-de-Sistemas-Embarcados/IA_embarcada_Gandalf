@@ -9,6 +9,9 @@ class ImageReceiver():
             print("[ERROR]: FATAL: câmera não abriu!!!")
             exit()
 
+        if not self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1):
+            print("[WARNING]: backend OpenCV não aceitou buffer size 0")
+
         print("[SUCCESS]: captura de imagens inicializada com sucesso")
 
     def capture_frame(self):
