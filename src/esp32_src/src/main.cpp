@@ -1,9 +1,12 @@
 #include <Arduino.h>
 #include <motorControl.hpp>
+#define ONBOARD_LED_PIN 2
 
 void setup()
 {
   Serial.begin(115200);
+  pinMode(ONBOARD_LED_PIN, OUTPUT);
+  digitalWrite(ONBOARD_LED_PIN, LOW);
 }
 
 void loop()
@@ -17,6 +20,10 @@ void loop()
     {
       control_motor(comm);
       Serial.println("ACK");
+    }
+    else
+    {
+      Serial.println("HUH");
     }
   } 
 }
